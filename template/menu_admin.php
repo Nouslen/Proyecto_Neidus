@@ -28,6 +28,10 @@ $nombreCompleto=$_SESSION['nombre'];
       <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown"   aria-haspopup="true" aria-expanded="false" >Mantenedores</a>
      <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
       <a class="dropdown-item" href="mantenedor_al.php">Alumnos</a>
+      <a class="dropdown-item" href="mantenedor_apo.php">Apoderados</a>
+      <a class="dropdown-item" href="mantenedor_doc.php">Profesores</a>
+      <a class="dropdown-item" href="mantenedor_adm.php">ADMIN</a>
+
       </div>
       </li>
     
@@ -36,8 +40,3 @@ $nombreCompleto=$_SESSION['nombre'];
   <span class="text-white mr-5 ">Bienvenido:<?php echo " <strong>".$nombreCompleto."</strong>, con perfil: <strong>Administrador</strong>" ?> </span><a href="cerrar_sesion.php" class="text-warning">Cerrar Sesión</a>
 </nav>
 
-<script>
-$(document).ready(function(){
-  $(".dropdown-toggle").dropdown("toggle");
-});
-</script>

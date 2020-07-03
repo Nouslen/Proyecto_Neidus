@@ -23,8 +23,9 @@ if (empty($_POST)) {
 	$sexo = "";
 	$curso = "";
 	$val_curso=-1;
-	$ruta="images/Alumno/";
-	$foto = "usuario.jpg";
+	$nom_al="";
+	$val_al="";
+
 }else{
 	$run=$_POST['run'];
 	$nombres =$_POST['nombres'];
@@ -35,8 +36,29 @@ if (empty($_POST)) {
 	$edad =$_POST['edad'];
 	$sexo =$_POST['sexo'];
 	$curso =$_POST['curso'];
-	$ruta="images/Alumno/";
-	$foto = "usuario.jpg";
+	$val_al=$_POST['alumno'];
+
+
+	$sql_pre_parche="SELECT id_alumno, Persona_Rut, Curso_id_Curso FROM alumno WHERE id_alumno =".$val_al."";
+		$resul_prep_parch=mysqli_query($conexion, $sql_pre_parche);
+		$datosp=mysqli_fetch_assoc($resul_prep_parch);
+		$coper=$datosp['id_alumno'];
+		$ruleta=$datosp['Persona_Rut'];
+		$magikarp=$datosp['Curso_id_Curso'];
+
+		$_SESSION['puxa']=$coper;
+
+		$qsl="SELECT Nombre, Ap_Paterno, Ap_Materno FROM persona where Rut ='".$ruleta."'";
+		$resuleta=mysqli_query($conexion, $qsl);
+		$datosa=mysqli_fetch_assoc($resuleta);
+
+		$charmander=$datosa['Nombre'];
+		$charmaleon=$datosa['Ap_Paterno'];
+		$charizard=$datosa['Ap_Materno'];
+
+		$mega_charizard= $charmander." ".$charmaleon." ".$charizard."";
+		$nom_al=$mega_charizard;
+//aca va el nombre y valor del alumno
 
 	
 }
@@ -98,7 +120,7 @@ if (empty($_POST)) {
 				{} else {
 					$.ajax({ //metodo ajax
 						type: "POST", //aqui puede  ser get o post
-						url: "buscarAlumno.php", //la url adonde se va a mandar la cadena a buscar
+						url: "buscarApoderado.php", //la url adonde se va a mandar la cadena a buscar
 						data: cadenaBuscar,
 						cache: false,
 						success: function(html) //funcion que se activa al recibir un dato
@@ -140,13 +162,13 @@ if (empty($_POST)) {
 if (@$_SESSION['modo'] == "cargar") {
 	if (!empty($_GET['id'])) {
 
-		$consu_run="SELECT * FROM alumno WHERE id_alumno='".$_GET['id']."'";
+		$consu_run="SELECT * FROM apoderado WHERE id_apoderado ='".$_GET['id']."'";
 		$resultado_run = mysqli_query($conexion, $consu_run);
 		$encontra_run = mysqli_fetch_assoc($resultado_run);
 		$runa=$encontra_run['Persona_Rut'];
-		$foto_run=$encontra_run['Foto'];
-		$paso_curso=$encontra_run['Curso_id_Curso'];
-		$nom_carp=$encontra_run['nombreCarpeta'];
+		$nombreAlumno=$encontra_run['matricula_alumno'];
+		$paso_curso=$encontra_run['Alumno_Curso_id_Curso'];
+		$paso_alu=$encontra_run['Alumno_id_alumno'];
 
 		$consu_curso="SELECT * FROM curso WHERE id_Curso=".$paso_curso."";
 		$resu_curso=mysqli_query($conexion, $consu_curso);
@@ -168,17 +190,9 @@ if (@$_SESSION['modo'] == "cargar") {
 			$sexo = $fila_buscar['Sexo'];
 			$curso=$nom_curso;
 			$val_curso=$paso_curso;
-			$foto=$foto_run;
-			$broni=$nom_carp;
+			$val_al=$paso_alu;
+			$nom_al=$nombreAlumno;
 			
-
-
-			
-			if ($foto=="usuario.jpg") {
-				$ruta ="images/Alumno";
-			}else{
-				$ruta="images/".$broni."";
-			}
 
 			
 			$_SESSION['apa']=$paterno;
@@ -229,13 +243,14 @@ if (isset($_POST['btn_registrar'])) {
 
 		//TODO: insert
 		//armar query (Para persona)
-		$sqlinsertar = "INSERT INTO persona (Rut, Nombre, Ap_Paterno, Ap_Materno, Telefono, Edad, Sexo, correo, numero, clave) VALUES ('" . $run . "', '" . $nombres . "', '" . $paterno . "', '" . $materno . "', '" . $telefono . "', " . $edad . ", '" . $sexo . "', '" . $correo . "', 1, '".$resul_clave."')";
+		$sqlinsertar = "INSERT INTO persona (Rut, Nombre, Ap_Paterno, Ap_Materno, Telefono, Edad, Sexo, correo, numero, clave) VALUES ('" . $run . "', '" . $nombres . "', '" . $paterno . "', '" . $materno . "', '" . $telefono . "', " . $edad . ", '" . $sexo . "', '" . $correo . "', 2, '".$resul_clave."')";
 		//ejecutar query
 		$resultado = mysqli_query($conexion, $sqlinsertar);
 		//Armar query para alumno
 		
+		
 
-		$sql_insert_alumn="INSERT INTO alumno ( numero, Foto, Persona_Rut, Curso_id_Curso, nombreCarpeta) VALUES ( 1, 'usuario.jpg', '".$run."', ".$curso.", '".$paterno."')";
+		$sql_insert_alumn="INSERT INTO apoderado ( matricula_alumno , estado, Persona_Rut, Alumno_id_alumno, Alumno_Curso_id_Curso) VALUES ('".$mega_charizard."', 1, '".$run."', ".$val_al.", ".$magikarp.")";
 		$res_in_alu= mysqli_query($conexion, $sql_insert_alumn);
 
 		
@@ -248,17 +263,22 @@ if (isset($_POST['btn_registrar'])) {
 //******** fin ingresar ******************
 
 
-
 //********* modificar ********************
 if (isset($_POST['btn_modificar'])) {
+	$pichu="SELECT id_alumno, Curso_id_Curso FROM alumno WHERE id_alumno = ".$_SESSION['puxa']."";
+	$pikachu= mysqli_query($conexion, $pichu);
+	$raichu=mysqli_fetch_assoc($pikachu);
+	$nuevo_curso=$raichu['Curso_id_Curso'];
+	
+
 	//TODO: buscar usuario, armar query, ejecutar query, informar
-	$consulta = "SELECT id_alumno,Persona_Rut,Curso_id_Curso FROM alumno WHERE id_alumno='" . $_GET['id'] . "'";
+	$consulta = "SELECT id_apoderado, Persona_Rut, Alumno_id_alumno FROM apoderado WHERE id_apoderado='" . $_GET['id'] . "'";
 	$resultado = mysqli_query($conexion, $consulta);
 	$encontrados = mysqli_num_rows($resultado);
 	$rowtwo=mysqli_fetch_assoc($resultado);
 	$rut=$rowtwo['Persona_Rut'];
-	$previo_curso=$rowtwo['Curso_id_Curso'];
-
+	$previo_alu=$rowtwo['Alumno_id_alumno'];
+	
 
 	if ($encontrados > 0) {
 		//armar query  
@@ -267,8 +287,8 @@ if (isset($_POST['btn_modificar'])) {
 		//ejecutar query
 		mysqli_query($conexion, $sqlmodificar);
 
-	$sql_up="UPDATE alumno SET Curso_id_Curso ='".$_POST['curso']."' WHERE id_alumno =".$_GET['id']." AND Curso_id_Curso=".$previo_curso."";
-		$res_up=mysqli_query($conexion, $sql_up);
+	$sql_up="UPDATE apoderado SET  matricula_alumno ='".$mega_charizard."', Alumno_id_alumno =".$_SESSION['puxa']." , Alumno_Curso_id_Curso = ".$nuevo_curso." WHERE id_apoderado =".$_GET['id']." AND Alumno_id_alumno=".$previo_alu."";
+		mysqli_query($conexion, $sql_up);
 
 		
 
@@ -277,9 +297,9 @@ if (isset($_POST['btn_modificar'])) {
 
 		//informamos ok	
 		
-		
-		header('Location: mantenedor_al.php');
 		$mensaje = "<div class='alert alert-success'><strong>Usuario Modificado</strong></div>";
+		header('Location: mantenedor_apo.php');
+		
 
 	} else {
 		$mensaje = "<div class='alert alert-danger'><strong>No se encontro el Registro del Usuario que desea Modificar</strong></div>";
@@ -290,11 +310,10 @@ if (isset($_POST['btn_modificar'])) {
 
 
 
-
 //********* eliminar ********************
 if (isset($_POST['btn_eliminar'])) {
 	//TODO: buscar usuario, armar query, ejecutar query, informar
-	$consulta = "SELECT id_alumno,Persona_Rut FROM alumno WHERE id_alumno='" . $_GET['id'] . "'";
+	$consulta = "SELECT Persona_Rut FROM apoderado WHERE id_apoderado='" . $_GET['id'] . "'";
 	$resultado = mysqli_query($conexion, $consulta);
 	$encontrados = mysqli_num_rows($resultado);
 	$rowtwo=mysqli_fetch_assoc($resultado);
@@ -302,7 +321,7 @@ if (isset($_POST['btn_eliminar'])) {
 
 	if ($encontrados > 0) {
 		//armar query
-		$sqleliminar = "DELETE FROM alumno WHERE id_alumno = " . $_GET['id'] . "";
+		$sqleliminar = "DELETE FROM apoderado WHERE id_apoderado = " . $_GET['id'] . "";
 		//ejecutar query
 		mysqli_query($conexion, $sqleliminar);
 
@@ -311,17 +330,13 @@ if (isset($_POST['btn_eliminar'])) {
 		mysqli_query($conexion, $sql_del_perso);
 
 		//informamos ok	
-		header('Location: mantenedor_al.php');
+		header('Location: mantenedor_apo.php');
 		$mensaje = "<div class='alert alert-success'>Usuario Eliminado</div>";
 	} else {
 		$mensaje = "<div class='alert alert-danger'><strong>No se encontro el Registro del Usuario que desea Eliminar</strong></div>";
 	}
 }
 //******** fin eliminar ******************
-
-
-
-
 
 
  ?>
@@ -357,11 +372,11 @@ if (isset($_POST['btn_eliminar'])) {
 			<form enctype="multipart/form-data" action="" method="post" id="reg_usuarios" name="reg_usuarios">
 				<div class="row alert alert-info mt-3">
 					<div class="col-lg-4">
-						<h5>Mantenedor de Alumnos</h5>
+						<h5>Mantenedor de Apoderados</h5>
 					</div>
 					<!-- *************  BUSCADOR ******************** -->
 					<div class="col-lg-8 input-group">
-						<input type="text" class="busca form-control" placeholder="Ingrese nombre del alumno a buscar" id="caja_busqueda" name="clave">
+						<input type="text" class="busca form-control" placeholder="Ingrese nombre del apoderado a buscar" id="caja_busqueda" name="clave">
 						<div id="mostrar"></div>
 						<div class="input-group-append"><button class="btn btn-info" type="button" id="buscar_usu" name="buscar_usu" disabled>Buscar</button></div>
 					</div>
@@ -432,7 +447,8 @@ if (isset($_POST['btn_eliminar'])) {
 							<option value="Masculino">Masculino</option>
 
 							<?php } } ?>
-							
+
+
 							</select>
 							</div>
 								
@@ -441,17 +457,44 @@ if (isset($_POST['btn_eliminar'])) {
 								<input type="email" class="form-control" name="correo" id="correo" placeholder="Ingrese su Correo..." value="<?php echo $correo ?>">
 							</div>
 						</div>
+
+<?php 
+		//activar si viene algo por get - inicio curso
+					if (!(empty($_GET))) {  
+						
+?>					
+
 						<div class="row">
 
 
 							<div class="form-group col-lg-3">
-							<label for="curso">Curso:</label>
-							<select class="form-control" id="curso" name="curso">
+								<label for="curso">Curso del alumno:</label>
+								<input type="text" class="form-control" name="curso" id="curso" value="<?php echo $curso ?>" readonly="readonly">
+							</div>
+
+							
+						</div>
+
+  <?php  //fin curso
+			}
+  ?>
+							
+
+						
+					</div>
+					<div class="col-lg-2">
+						
+						<div class="container mt-4 "> <!--aca va el alumno -->
+
+							<label for="alumno">Alumno:</label>
+							<select class="form-control-sm" id="alumno" name="alumno" width="400px">
+								
+							</style>>
 								<?php 
 								if (!(empty($_GET))) {
 							 ?>
-							 <option value="<?php echo $val_curso; ?>" selected>
-									<?php echo $curso; ?>
+							 <option value="<?php echo $val_al; ?>" selected>
+									<?php echo $nom_al; ?>
 								</option>
 							
 							<?php } ?>
@@ -459,66 +502,52 @@ if (isset($_POST['btn_eliminar'])) {
 							<?php if (empty($_GET)) {
 								
 							 ?>
-							 <option value="0">Seleccione curso</option>
+							 <option value="0">Seleccione el Alumno</option>
 
 								<?php } ?>
 
 								<?php 
-									$consulta_buscar = "SELECT * FROM curso";
+									$consulta_buscar = "SELECT * FROM alumno";
 									$resultado_buscar = mysqli_query($conexion,$consulta_buscar);
 									while($datosc=mysqli_fetch_array($resultado_buscar)){
+									$taza=$datosc['Persona_Rut'];
 
-										if (!($val_curso==$datosc['id_Curso'])) {
-											
+									$consultal = "SELECT * FROM persona WHERE Rut='".$taza."'";
+									$sql_resl=mysqli_query($conexion,$consultal);
+									$rowal=mysqli_fetch_array($sql_resl);//sacamos nombre profe
+									$nick=$rowal['Nombre']."";
+									$nick_apa=$rowal['Ap_Paterno']."";
+									$nick_ama=$rowal['Ap_Materno']."";
+									$anivia= $nick." ".$nick_apa." ".$nick_ama."";
+
+
+									if (!($val_al==$datosc['id_alumno'])) {
 										
-
+									
 								 ?>
 
-
-								<option value="<?php echo $datosc['id_Curso']; ?>">
-									<?php echo $datosc['nombre_curso']; ?>
+								<option value="<?php echo $datosc['id_alumno']; ?>">
+									<?php echo $anivia; ?>
 								</option>
 
-							<?php }} ?>
 
-							
-
+							<?php
+								}
+							 } ?>
 							</select>
-							</div>
-
-
-
-							
-
 						</div>
-					</div>
-					<div class="col-lg-2">
-						
-						<div class="container mt-4"> <img src="<?php echo $ruta ?>/<?php echo $foto ?>" height="150px" width="auto" class="rounded"> </div>
-						<?php
-						if (!(empty($_GET))) {
-						
-						?>
-						<div class="mt-1">
-							<a href="cargarFotoAlumno.php?id=<?php echo $_GET['id']; ?>" class="btn btn-info">Agregar Fotografia</a>
-						</div>
-
-						<?php	}
-						  ?>
-
-
 					</div>
 				</div>
 				<div class="container"><?php echo $mensaje; ?></div>
 				<div class="container mt-3">
 					<di class="col-lg-4">
-						<input type="submit" name="btn_registrar" class="btn btn-success" value="Registrar Alumno"   />
+						<input type="submit" name="btn_registrar" class="btn btn-success" value="Registrar Apoderado"   />
 					</di>
 					<di class="col-lg-4">
-						<input type="submit" name="btn_modificar" class="btn btn-warning" value="Modificar Alumno" />
+						<input type="submit" name="btn_modificar" class="btn btn-warning" value="Modificar Apoderado" />
 					</di>
 					<di class="col-lg-4">
-						<input type="submit" name="btn_eliminar" class="btn btn-danger" value="Eliminar Alumno" />
+						<input type="submit" name="btn_eliminar" class="btn btn-danger" value="Eliminar Apoderado" />
 					</di>
 				</div>
 				<div id="buscarr"></div>
@@ -539,4 +568,3 @@ if (isset($_POST['btn_eliminar'])) {
 
   </body>
   </html>
-  

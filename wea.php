@@ -10,3 +10,5 @@ $juntar=$paso[0].$paso[1].$paso[2];
 $resul= substr($juntar,0,5);
 echo $resul;
  ?>
+
+

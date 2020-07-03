@@ -1,0 +1,9 @@
+.login,
+.image {
+    min-height: 100vh
+}
+.bg-image {
+    background-image: url('https://images.mega.cl/2016/05/27/16230_2_57486a5945f87.gif');
+    background-size: cover;
+    background-position: center center
+}

@@ -14,10 +14,10 @@ header('Location:index.html');
 if($_GET){
 	$idusuario = $_GET['id'];
 	$_SESSION['idp']= $_GET['id'];
-	$consulta_buscar = "SELECT * FROM alumno WHERE id_alumno = ".$idusuario."";
+	$consulta_buscar = "SELECT * FROM profesor WHERE idProfesor = ".$idusuario."";
 	$resultado_buscar = mysqli_query($conexion,$consulta_buscar);
 	if($fila_buscar = mysqli_fetch_assoc($resultado_buscar)){
-		$idusuario=$fila_buscar['id_alumno'];
+		$idusuario=$fila_buscar['idProfesor'];
 		if(!($fila_buscar['Foto']=="usuario.jpg")){
 			$foto = $fila_buscar['Foto'];
 			$nom_carp=$fila_buscar['nombreCarpeta'];
@@ -49,25 +49,24 @@ if(isset($_POST['guardar'])){
 		if(($_FILES["foto"]["type"]=="image/gif") || ($_FILES["foto"]["type"]=="image/jpeg") 
 		|| ($_FILES["foto"]["type"]=="image/jpg") || ($_FILES["foto"]["type"]=="image/png")){
 		//Indicamos la ruta donde subiremos los archivos
-		//$ruta = "images/Alumno_".$_SESSION['idp']."_".$_SESSION['apa']."";
+		//$ruta = "images/Profe_".$_SESSION['idp']."_".$_SESSION['apa']."";
 
-		
-
-		$sql_pre_parche="SELECT Foto FROM alumno WHERE id_alumno =".$_SESSION['idp']."";
+		$sql_pre_parche="SELECT Foto FROM profesor WHERE idProfesor =".$_SESSION['idp']."";
 		$resul_prep_parch=mysqli_query($conexion, $sql_pre_parche);
 		$datosp=mysqli_fetch_assoc($resul_prep_parch);
 		$prev_foto=$datosp['Foto'];
+		
 
 
 		// crear el nombreCarpeta
+		$name_folder="Profe_".$_SESSION['idp']."_".$_SESSION['apa']."";
 
-
-		$name_folder="Alumno_".$_SESSION['idp']."_".$_SESSION['apa']."";
-
-		$sqlup="UPDATE alumno SET nombreCarpeta='".$name_folder."' WHERE id_alumno=".$_SESSION['idp']."";
+		$sqlup="UPDATE profesor SET nombreCarpeta='".$name_folder."' WHERE idProfesor=".$_SESSION['idp']."";
 		mysqli_query($conexion, $sqlup);
 		
 		$ruta="images/".$name_folder."";
+
+	
 				
 				
 	//Con esto preguntamos si existe la carpeta y si no, la creamos
@@ -78,8 +77,8 @@ if(isset($_POST['guardar'])){
 
 
 
-		//Ahora movemos la imagen desde el directorio temporal al directorio definitivo
-		$nom_foto="Alumn_".$idusuario."";
+	//Ahora movemos la imagen desde el directorio temporal al directorio definitivo
+		$nom_foto="Profe_".$idusuario."";
 	
 		
 		if ($prev_foto==$nom_foto) {
@@ -93,21 +92,22 @@ if(isset($_POST['guardar'])){
 
 
 
-		
+
+
 
 		move_uploaded_file($_FILES['foto']['tmp_name'],$ruta."/".$post_foto.".jpg");
 
-		$query_mod="UPDATE alumno SET Foto='".$post_foto.".jpg' WHERE id_alumno=".$idusuario."";
+		$query_mod="UPDATE profesor SET Foto='".$post_foto.".jpg' WHERE idProfesor=".$idusuario."";
 		//Ahora actualizamos el nombre del archivo en la base de datos
 		@$res_modif_foto=mysqli_query($conexion,$query_mod);
-		$query_bus="SELECT id_alumno FROM alumno WHERE id_alumno=".$idusuario."";
+		$query_bus="SELECT idProfesor FROM profesor WHERE idProfesor=".$idusuario."";
 		$sql_res=mysqli_query($conexion,$query_bus);
 
 		while($row=mysqli_fetch_assoc($sql_res)){
 			$idusuario=$row['idusuario'];		
 		}
 		@$_SESSION['modo']="cargar";
-		header("location:mantenedor_al.php");
+		header("location:mantenedor_doc.php");
 		}else{
 			//Si el formato no es permitido
 			echo '<script type="text/javascript">alert("El formato del archivo no esta permitido.")</script>';

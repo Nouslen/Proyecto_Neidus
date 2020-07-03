@@ -6,8 +6,8 @@ Debemos definir 4 parametros para la conexión a nuestra Base de Datos
 	3)La contraseña del usuario de BD 		4)La Base de Datos.
 */
 $servidor = "localhost";
-$usuario = "nelson";
-$contrasena = "asd123";
+$usuario = "benjamin";
+$contrasena = "Abc-123";
 $basedatos = "neidus";
 
 

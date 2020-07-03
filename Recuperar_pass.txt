@@ -1,0 +1,19 @@
+<?php
+
+require 'function/conexion.php';
+
+$error = array ();
+
+if(!empty ($_POST))
+{
+	$email = $mysqli-> real_escape_string($_POST['correo']);
+
+	if(!isEmail($email))
+	{
+		$errors[] = "Debe ingresar un correo electronico valido";
+
+		
+	}
+}
+
+?>
