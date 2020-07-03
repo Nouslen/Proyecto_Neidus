@@ -2,7 +2,7 @@
 
 //session_start();
 
-//probando aea
+//probando aea asdasd
 
 $nombreCompleto=$_SESSION['nombre'];
  ?>
